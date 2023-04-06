@@ -3,12 +3,14 @@
 
 <h3>Endpoints</h3>
 
-  POST  /api/v1/cmd/query
+ <b>POST </b>  /api/v1/cmd/query
+
 ```
   Example Body {
     "querystring":"SET a 4"
 }
 ```
+
 #Task Description
 
 In memory key value database
