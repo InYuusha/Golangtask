@@ -27,15 +27,17 @@ func ExecuteQuery(c *gin.Context) {
 	fieldsArr := strings.Split(qString, " ")
 
 	var (
-		cmd       string
-		key       string
-		value     string
-		expiryStr string
-		expiry    int64
-		condition string
-		values    []string
+		cmd                string
+		key                string
+		value              string
+		expiryStr          string
+		expiry             int64
+		condition          string
+		values             []string
+		blockForSeconds    float64
+		blockForSecondsStr string
 	)
-	cmd = fieldsArr[0];
+	cmd = fieldsArr[0]
 
 	if cmd == "SET" {
 		switch len(fieldsArr) {
@@ -59,6 +61,9 @@ func ExecuteQuery(c *gin.Context) {
 		values = fieldsArr[2:]
 	} else if cmd == "QPOP" {
 		key = fieldsArr[1]
+	} else if cmd == "BQPOP" {
+		key = fieldsArr[1]
+		blockForSecondsStr = fieldsArr[2]
 	}
 
 	if expiryStr != "" {
@@ -71,13 +76,22 @@ func ExecuteQuery(c *gin.Context) {
 			return
 		}
 	}
+	if blockForSecondsStr != "" {
+		var err error
+		blockForSeconds, err = strconv.ParseFloat(blockForSecondsStr, 64)
+		if err != nil {
+			log.Println(err)
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+	}
 	var res interface{}
 	var err error
 
 	switch cmd {
 	case "SET":
 		res, err = kvs.SetCmd(key, &value, &expiry, condition)
-		log.Println("Res ",res)
+		log.Println("Res ", res)
 		if err != nil {
 			fmt.Println(err)
 			c.AbortWithError(http.StatusInternalServerError, err)
@@ -85,20 +99,30 @@ func ExecuteQuery(c *gin.Context) {
 		}
 	case "GET":
 		res, err = kvs.GetCmd(key)
-		log.Println("Res ",res)
+		log.Println("Res ", res)
 		if err != nil {
 			log.Println(err)
 			c.AbortWithError(http.StatusInternalServerError, err)
 		}
 	case "QPUSH":
 		res, err = kvs.Qpush(key, values)
-		log.Println("Res ",res)
+		log.Println("Res ", res)
 		if err != nil {
 			log.Println(err)
 			c.AbortWithError(http.StatusInternalServerError, err)
 		}
 	case "QPOP":
-		res, err = kvs.Qpop(key, values)	
+		res, err = kvs.Qpop(key)
+		if err != nil {
+			log.Println(err)
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+	case "BQPOP":
+		res, err = kvs.Bqpop(key, blockForSeconds)
+		if err != nil {
+			log.Println(err)
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
 	}
 
 	c.JSON(200, dto.Response{
