@@ -1,4 +1,15 @@
+
 # Golangtask
+
+<h3>Endpoints</h3>
+
+  POST  /api/v1/cmd/query
+```
+  Example Body {
+    "querystring":"SET a 4"
+}
+```
+#Task Description
 
 In memory key value database
 Create a simple in memory key value datastore that performs operations on it based on certain
