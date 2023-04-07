@@ -5,7 +5,7 @@ import (
 	"github.com/InYuusha/api/v1/cmd/dto"
 )
 
-func NewKeyValueStore() *c.KeyValueStore{
+func NewKeyValueStore() *c.KeyValueStore {
 	return &c.KeyValueStore{
 		Data: make(map[string]*dto.Value),
 	}

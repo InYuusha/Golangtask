@@ -3,7 +3,6 @@ package controller
 import (
 	"fmt"
 	"log"
-	"strings"
 	"sync"
 	"time"
 
@@ -48,39 +47,38 @@ func (kvs *KeyValueStore) GetCmd(key string) (string, error) {
 	return v.Val, nil
 }
 
-func (kvs *KeyValueStore) Qpush(key string, values []string) (string, error) {
+func (kvs *KeyValueStore) Qpush(key string, values []string) {
 	kvs.Lock()
 	defer kvs.Unlock()
-	v, ok := kvs.Data[key]
+	queue, ok := kvs.Data[key]
 	if !ok {
-		kvs.Data[key] = &dto.Value{}
-		v = kvs.Data[key]
+		kvs.Data[key] = queue
+		go popFromQueue(queue)
 	}
 	for _, value := range values {
-		v.Val += " " + value
+		queue.Push <- value
 	}
-	return "OK", nil
 }
 
-func (kvs *KeyValueStore) Qpop(key string) (string, error) {
+func popFromQueue(queue *dto.Value) {
+	for {
+		value := <-queue.Pop
+		fmt.Println("Popped value from queue:", value)
+	}
+}
+
+func (kvs *KeyValueStore) Qpop(key string) string {
 	kvs.Lock()
 	defer kvs.Unlock()
-	v, ok := kvs.Data[key]
+	queue, ok := kvs.Data[key]
 	if !ok {
-		return "", fmt.Errorf("queue is empty")
+		return "null"
 	}
-	values := strings.Split(v.Val, " ")
-	last := values[len(values)-1]
-	if len(values) == 1 {
-		delete(kvs.Data, key)
-	} else {
-		v.Val = strings.Join(values," ")
-	}
-	return last, nil
+	value := <-queue.Push
+	return value
 }
 
-
-func (kvs *KeyValueStore) Bqpop(key string, timeout float64) (string, error) {
+/*func (kvs *KeyValueStore) Bqpop(key string, timeout float64) (string, error) {
 	deadline := time.Now().Add(time.Duration(timeout * 1e9))
 	for {
 		kvs.Lock()
@@ -98,7 +96,7 @@ func (kvs *KeyValueStore) Bqpop(key string, timeout float64) (string, error) {
 			if len(values) == 1 {
 				delete(kvs.Data, key)
 			} else {
-				v.Val = strings.Join(values," ")
+				v.Val = strings.Join(values, " ")
 			}
 			kvs.Unlock()
 			return last, nil
@@ -109,4 +107,4 @@ func (kvs *KeyValueStore) Bqpop(key string, timeout float64) (string, error) {
 		}
 	}
 }
-
+*/

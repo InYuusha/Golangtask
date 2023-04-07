@@ -34,8 +34,8 @@ func ExecuteQuery(c *gin.Context) {
 		expiry             int64
 		condition          string
 		values             []string
-		blockForSeconds    float64
-		blockForSecondsStr string
+		//blockForSeconds    float64
+		//blockForSecondsStr string
 	)
 	cmd = fieldsArr[0]
 
@@ -63,7 +63,7 @@ func ExecuteQuery(c *gin.Context) {
 		key = fieldsArr[1]
 	} else if cmd == "BQPOP" {
 		key = fieldsArr[1]
-		blockForSecondsStr = fieldsArr[2]
+		//blockForSecondsStr = fieldsArr[2]
 	}
 
 	if expiryStr != "" {
@@ -76,7 +76,7 @@ func ExecuteQuery(c *gin.Context) {
 			return
 		}
 	}
-	if blockForSecondsStr != "" {
+	/*if blockForSecondsStr != "" {
 		var err error
 		blockForSeconds, err = strconv.ParseFloat(blockForSecondsStr, 64)
 		if err != nil {
@@ -84,7 +84,7 @@ func ExecuteQuery(c *gin.Context) {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-	}
+	}*/
 	var res interface{}
 	var err error
 
@@ -105,24 +105,24 @@ func ExecuteQuery(c *gin.Context) {
 			c.AbortWithError(http.StatusInternalServerError, err)
 		}
 	case "QPUSH":
-		res, err = kvs.Qpush(key, values)
+		kvs.Qpush(key, values)
 		log.Println("Res ", res)
 		if err != nil {
 			log.Println(err)
 			c.AbortWithError(http.StatusInternalServerError, err)
 		}
 	case "QPOP":
-		res, err = kvs.Qpop(key)
+		res = kvs.Qpop(key)
 		if err != nil {
 			log.Println(err)
 			c.AbortWithError(http.StatusInternalServerError, err)
 		}
-	case "BQPOP":
+		/*case "BQPOP":
 		res, err = kvs.Bqpop(key, blockForSeconds)
 		if err != nil {
 			log.Println(err)
 			c.AbortWithError(http.StatusInternalServerError, err)
-		}
+		}*/
 	}
 
 	c.JSON(200, dto.Response{

@@ -3,5 +3,5 @@ package dto
 type Response struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
-	Data   map[string]interface{}
+	Data    map[string]interface{}
 }
