@@ -1,8 +1,22 @@
 
 # Golangtask
 
-<h3>How to Test</h3>
+<h3>How to Run</h3>
+<br>
+Give Execution permission to the start script
 
+``` 
+  chmod +x start.sh
+```
+
+Run
+
+```
+  ./start.sh
+```
+
+<h3>How to Test</h3>
+<br>
 Give Execution permission to the test runner script
 
 ``` 
@@ -16,7 +30,7 @@ Run
 ```
 
 <h3>Endpoints</h3>
-
+<br>
  <b>POST </b>  /api/v1/cmd/query
 
 ```
