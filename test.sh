@@ -1,0 +1,1 @@
+cd api/v1/cmd && go test -v

@@ -90,7 +90,6 @@ func (kvs *KeyValueStore) Bqpop(key string, timeout float64) (string, error) {
 			if time.Now().After(deadline) {
 				return "", fmt.Errorf("queue is empty")
 			}
-			time.Sleep(100 * time.Millisecond)
 			continue
 		}
 		values := strings.Split(v.Val, " ")
@@ -108,7 +107,6 @@ func (kvs *KeyValueStore) Bqpop(key string, timeout float64) (string, error) {
 		if time.Now().After(deadline) {
 			return "", fmt.Errorf("queue is empty")
 		}
-		time.Sleep(100 * time.Millisecond)
 	}
 }
 
