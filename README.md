@@ -1,6 +1,20 @@
 
 # Golangtask
 
+<h3>How to Run</h3>
+<br>
+Give Execution permission to the start script
+
+``` 
+  chmod +x start.sh
+```
+
+Run
+
+```
+  ./start.sh
+```
+
 <h3>How to Test</h3>
 <br>
 Give Execution permission to the test runner script
